@@ -98,6 +98,7 @@ void corner_cell(lbm_comm_t * comm, lbm_mesh_t * mesh)
 	// Receive from L, send to R, receive from R, send to L.
 	// Receive from U, send to D, receive from D, send to U.
 	MPI_Status status;
+	// CORRECT when n != m.
 	int s = DIRECTIONS*(comm->width);
 	int rank;
 	int coords[2];
@@ -107,7 +108,7 @@ void corner_cell(lbm_comm_t * comm, lbm_mesh_t * mesh)
 		coords[0] = comm->rank_x+1;
 		coords[1] = comm->rank_y;
 		MPI_Cart_rank(comm->communicator, coords, &rank);
-    	printf("I'm [%d, %d], my L/R coordinates [%d, %d], process %d\n", comm->rank_x, comm->rank_y, coords[0], coords[1], rank);
+    	//printf("I'm [%d, %d], my L/R coordinates [%d, %d], process %d\n", comm->rank_x, comm->rank_y, coords[0], coords[1], rank);
 		MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, 0), s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
 		MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, 0), s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 		// UP/DOWN communication.
@@ -119,6 +120,13 @@ void corner_cell(lbm_comm_t * comm, lbm_mesh_t * mesh)
 		MPI_Send(comm->buffer_send_down, s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
 		MPI_Recv(comm->buffer_recv_down, s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 		fill_buffer(lbm_mesh_get_cell(mesh, 0, comm->height-1), comm->buffer_recv_down, comm->width);
+		// DOWN-RIGHT communication.
+		coords[0] = comm->rank_x+1;
+		coords[1] = comm->rank_y+1;
+		MPI_Cart_rank(comm->communicator, coords, &rank);
+    	printf("I'm [%d, %d], my DOWN-RIGHT coordinates [%d, %d], process %d\n", comm->rank_x, comm->rank_y, coords[0], coords[1], rank);
+		MPI_Send(lbm_mesh_get_cell(mesh, comm->width-1, comm->height-1), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
+		MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, comm->height-1), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 	}
 	// Corner cell (w-1,0).
 	if (comm->rank_x == comm->nb_x-1 && comm->rank_y == 0) {
@@ -136,6 +144,13 @@ void corner_cell(lbm_comm_t * comm, lbm_mesh_t * mesh)
 		MPI_Send(comm->buffer_send_down, s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
 		MPI_Recv(comm->buffer_recv_down, s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 		fill_buffer(lbm_mesh_get_cell(mesh, 0, comm->height-1), comm->buffer_recv_down, comm->width);
+		// DOWN-LEFT communication.
+		coords[0] = comm->rank_x-1;
+		coords[1] = comm->rank_y+1;
+		MPI_Cart_rank(comm->communicator, coords, &rank);
+    	printf("I'm [%d, %d], my DOWN-LEFT coordinates [%d, %d], process %d\n", comm->rank_x, comm->rank_y, coords[0], coords[1], rank);
+		MPI_Send(lbm_mesh_get_cell(mesh, 0, comm->height-1), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
+		MPI_Recv(lbm_mesh_get_cell(mesh, 0, comm->height-1), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 	}
 	// Corner cell (0,h-1).
 	if (comm->rank_x == 0 && comm->rank_y == comm->nb_y-1) {
@@ -153,6 +168,13 @@ void corner_cell(lbm_comm_t * comm, lbm_mesh_t * mesh)
 		fill_buffer(lbm_mesh_get_cell(mesh, 0, 0), comm->buffer_recv_up, comm->width);
 		fill_buffer(comm->buffer_send_up, lbm_mesh_get_cell(mesh, 0, 1), comm->width);
 		MPI_Send(comm->buffer_send_up, s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
+		// UP-RIGHT communication.
+		coords[0] = comm->rank_x+1;
+		coords[1] = comm->rank_y-1;
+		MPI_Cart_rank(comm->communicator, coords, &rank);
+    	printf("I'm [%d, %d], my UP-RIGHT coordinates [%d, %d], process %d\n", comm->rank_x, comm->rank_y, coords[0], coords[1], rank);
+		MPI_Send(lbm_mesh_get_cell(mesh, comm->width-1, 0), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
+		MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, 0), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 	}
 	// Corner cell (w-1,h-1).
 	if (comm->rank_x == comm->nb_x-1 && comm->rank_y == comm->nb_y-1) {
@@ -170,6 +192,13 @@ void corner_cell(lbm_comm_t * comm, lbm_mesh_t * mesh)
 		fill_buffer(lbm_mesh_get_cell(mesh, 0, 0), comm->buffer_recv_up, comm->width);
 		fill_buffer(comm->buffer_send_up, lbm_mesh_get_cell(mesh, 0, 1), comm->width);
 		MPI_Send(comm->buffer_send_up, s, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
+		// UP-LEFT communication.
+		coords[0] = comm->rank_x-1;
+		coords[1] = comm->rank_y-1;
+		MPI_Cart_rank(comm->communicator, coords, &rank);
+    	printf("I'm [%d, %d], my UP-LEFT coordinates [%d, %d], process %d\n", comm->rank_x, comm->rank_y, coords[0], coords[1], rank);
+		MPI_Send(lbm_mesh_get_cell(mesh, 0, 0), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD);
+		MPI_Recv(lbm_mesh_get_cell(mesh, 0, 0), 9, MPI_DOUBLE, rank, 99, MPI_COMM_WORLD, &status);
 	}
 }
 
