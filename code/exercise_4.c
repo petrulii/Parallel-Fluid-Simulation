@@ -31,6 +31,10 @@ void lbm_comm_init_ex4(lbm_comm_t * comm, int total_width, int total_height)
 	int rank;
 	int comm_size;
     int dims[] = {0, 0};
+	int period[2] = {0, 0};
+	int coords[2];
+    int reorder = 0;
+    MPI_Comm communicator;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
@@ -39,10 +43,14 @@ void lbm_comm_init_ex4(lbm_comm_t * comm, int total_width, int total_height)
     MPI_Dims_create(comm_size, 2, dims);
 	comm->nb_x = dims[0];
 	comm->nb_y = dims[1];
+    MPI_Cart_create(MPI_COMM_WORLD, 2, dims, period, reorder, &communicator);
+    MPI_Cart_coords(communicator, rank, 2, coords);
+
+    //printf("Coordinates [%d, %d], I'm Process %d/%d\n", coords[0], coords[1], rank, comm_size);
 
 	// The current task position in the splitting
-	comm->rank_x = comm_size % comm->nb_y;
-	comm->rank_y = comm_size / comm->nb_y;
+	comm->rank_x = coords[0];
+	comm->rank_y = coords[1];
 
 	// The local sub-domain size.
 	comm->width = (total_width / comm->nb_x) + 2;
