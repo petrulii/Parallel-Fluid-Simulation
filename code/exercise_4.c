@@ -91,13 +91,13 @@ void fill_buffer(double* dest, double* src, int width, int height, int to_cell)
 	if (to_cell == 1) {
 		for (int i=0; i<width; i++){
 			for (int k=0; k<DIRECTIONS; k++){
-				dest[i*height+k] = src[i+k];
+				dest[i*height+k] = src[i*DIRECTIONS+k];
 			}
 		}
 	} else {
 		for (int i=0; i<width; i++){
 			for (int k=0; k<DIRECTIONS; k++){
-				dest[i+k] = src[i*height+k];
+				dest[i*DIRECTIONS+k] = src[i*height+k];
 			}
 		}
 	}
