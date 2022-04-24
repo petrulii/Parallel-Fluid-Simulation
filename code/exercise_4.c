@@ -157,14 +157,10 @@ void lbm_comm_ghost_exchange_ex4(lbm_comm_t * comm, lbm_mesh_t * mesh)
 	
 	// Receive from L, send to R, receive from R, send to L.
 	// Receive from U, send to D, receive from D, send to U.
-	if (rank_l != MPI_PROC_NULL)
-		MPI_Recv(lbm_mesh_get_cell(mesh, 0, 0), h, MPI_DOUBLE, rank_l, 99, MPI_COMM_WORLD, &status);
-	if (rank_r != MPI_PROC_NULL)
-		MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, 0), h, MPI_DOUBLE, rank_r, 99, MPI_COMM_WORLD);
-	if (rank_r != MPI_PROC_NULL)
-		MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, 0), h, MPI_DOUBLE, rank_r, 99, MPI_COMM_WORLD, &status);
-	if (rank_l != MPI_PROC_NULL)
-		MPI_Send(lbm_mesh_get_cell(mesh, 1, 0), h, MPI_DOUBLE, rank_l, 99, MPI_COMM_WORLD);
+	MPI_Recv(lbm_mesh_get_cell(mesh, 0, 0), h, MPI_DOUBLE, rank_l, 99, MPI_COMM_WORLD, &status);
+	MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, 0), h, MPI_DOUBLE, rank_r, 99, MPI_COMM_WORLD);
+	MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, 0), h, MPI_DOUBLE, rank_r, 99, MPI_COMM_WORLD, &status);
+	MPI_Send(lbm_mesh_get_cell(mesh, 1, 0), h, MPI_DOUBLE, rank_l, 99, MPI_COMM_WORLD);
 
 	if (rank_u != MPI_PROC_NULL){
 		MPI_Recv(comm->buffer_recv_up, w, MPI_DOUBLE, rank_u, 99, MPI_COMM_WORLD, &status);
@@ -183,20 +179,13 @@ void lbm_comm_ghost_exchange_ex4(lbm_comm_t * comm, lbm_mesh_t * mesh)
 		MPI_Send(comm->buffer_send_up, w, MPI_DOUBLE, rank_u, 99, MPI_COMM_WORLD);
 	}
 
-	if (rank_dr != MPI_PROC_NULL){
-		MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, comm->height-2), 9, MPI_DOUBLE, rank_dr, 99, MPI_COMM_WORLD);
-		MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, comm->height-1), 9, MPI_DOUBLE, rank_dr, 99, MPI_COMM_WORLD, &status);
-	}
-	if (rank_dl != MPI_PROC_NULL){
-		MPI_Send(lbm_mesh_get_cell(mesh, 1, comm->height-2), 9, MPI_DOUBLE, rank_dl, 99, MPI_COMM_WORLD);
-		MPI_Recv(lbm_mesh_get_cell(mesh, 0, comm->height-1), 9, MPI_DOUBLE, rank_dl, 99, MPI_COMM_WORLD, &status);
-	}
-	if (rank_ur != MPI_PROC_NULL){
-		MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, 0), 9, MPI_DOUBLE, rank_ur, 99, MPI_COMM_WORLD, &status);
-		MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, 1), 9, MPI_DOUBLE, rank_ur, 99, MPI_COMM_WORLD);
-	}
-	if (rank_ul != MPI_PROC_NULL){
-		MPI_Recv(lbm_mesh_get_cell(mesh, 0, 0), 9, MPI_DOUBLE, rank_ul, 99, MPI_COMM_WORLD, &status);
-		MPI_Send(lbm_mesh_get_cell(mesh, 1, 1), 9, MPI_DOUBLE, rank_ul, 99, MPI_COMM_WORLD);
-	}
+	MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, comm->height-2), 9, MPI_DOUBLE, rank_dr, 99, MPI_COMM_WORLD);
+	MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, comm->height-1), 9, MPI_DOUBLE, rank_dr, 99, MPI_COMM_WORLD, &status);
+	MPI_Send(lbm_mesh_get_cell(mesh, 1, comm->height-2), 9, MPI_DOUBLE, rank_dl, 99, MPI_COMM_WORLD);
+	MPI_Recv(lbm_mesh_get_cell(mesh, 0, comm->height-1), 9, MPI_DOUBLE, rank_dl, 99, MPI_COMM_WORLD, &status);
+	MPI_Recv(lbm_mesh_get_cell(mesh, comm->width-1, 0), 9, MPI_DOUBLE, rank_ur, 99, MPI_COMM_WORLD, &status);
+	MPI_Send(lbm_mesh_get_cell(mesh, comm->width-2, 1), 9, MPI_DOUBLE, rank_ur, 99, MPI_COMM_WORLD);
+	MPI_Recv(lbm_mesh_get_cell(mesh, 0, 0), 9, MPI_DOUBLE, rank_ul, 99, MPI_COMM_WORLD, &status);
+	MPI_Send(lbm_mesh_get_cell(mesh, 1, 1), 9, MPI_DOUBLE, rank_ul, 99, MPI_COMM_WORLD);
+
 }
