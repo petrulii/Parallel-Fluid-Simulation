@@ -14,5 +14,5 @@ for i in range(1,7):
                 Y.append(float(time))
         plt.plot(X, Y, '.-' ,  label="Ex "+str(i))
 plt.legend(loc="upper left")
-plt.show()
 plt.savefig('measurements')
+plt.show()
