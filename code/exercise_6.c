@@ -121,10 +121,10 @@ void lbm_comm_ghost_exchange_ex6(lbm_comm_t * comm, lbm_mesh_t * mesh)
 	MPI_Isend(lbm_mesh_get_cell(mesh, 1, comm->height-2), 9, MPI_DOUBLE, rank_dl, 79, MPI_COMM_WORLD, &request_s);
 	MPI_Irecv(lbm_mesh_get_cell(mesh, 0, comm->height-1), 9, MPI_DOUBLE, rank_dl, 79, MPI_COMM_WORLD, &request_r);
 	MPI_Wait(&request_r, &status);
+	MPI_Isend(lbm_mesh_get_cell(mesh, comm->width-2, 1), 9, MPI_DOUBLE, rank_ur, 79, MPI_COMM_WORLD, &request_s);
 	MPI_Irecv(lbm_mesh_get_cell(mesh, comm->width-1, 0), 9, MPI_DOUBLE, rank_ur, 79, MPI_COMM_WORLD, &request_r);
 	MPI_Wait(&request_r, &status);
-	MPI_Isend(lbm_mesh_get_cell(mesh, comm->width-2, 1), 9, MPI_DOUBLE, rank_ur, 79, MPI_COMM_WORLD, &request_s);
+	MPI_Isend(lbm_mesh_get_cell(mesh, 1, 1), 9, MPI_DOUBLE, rank_ul, 79, MPI_COMM_WORLD, &request_s);
 	MPI_Irecv(lbm_mesh_get_cell(mesh, 0, 0), 9, MPI_DOUBLE, rank_ul, 79, MPI_COMM_WORLD, &request_r);
 	MPI_Wait(&request_r, &status);
-	MPI_Isend(lbm_mesh_get_cell(mesh, 1, 1), 9, MPI_DOUBLE, rank_ul, 79, MPI_COMM_WORLD, &request_s);
 }
