@@ -1,6 +1,5 @@
 import os
 import matplotlib.pyplot as plt
-'''
 X = [2,4,8,16]
 plt.figure()
 for i in range(1,4):
@@ -19,7 +18,7 @@ for i in range(1,4):
         plt.plot(X, Y, '.-' ,  label="Ex "+str(i))
 plt.legend(loc="upper left")
 plt.savefig('measurements123')
-plt.show()'''
+plt.show()
 plt.figure()
 for i in range(4,7):
         Y=[]
