@@ -21,7 +21,7 @@ plt.legend(loc="upper left")
 plt.savefig('measurements123')
 plt.show()'''
 plt.figure()
-for i in range(6,7):
+for i in range(4,7):
         Y=[]
         for j in X:
                 cmd = "mpirun --use-hwthread-cpus -np "+str(j)+" ./lbm -e "+str(i)+" -n"
